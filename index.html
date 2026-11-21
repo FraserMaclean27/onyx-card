@@ -177,7 +177,8 @@
     try {
       const r = await fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ ...d, name: `${d.first_name} ${d.last_name}`, _subject: `New contact from your Onyx card: ${d.first_name} ${d.last_name}`, _template: "table", _replyto: d.email }) });
-      if (!r.ok) throw new Error(r.status);
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || String(j.success) !== "true") throw new Error(j.message || r.status);
       form.hidden = true; done.hidden = false;
     } catch {
       msg.className = "msg err"; msg.textContent = "That didn't send. Please try again, or email fraser.maclean@getonyx.ai.";
